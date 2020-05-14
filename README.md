@@ -93,18 +93,48 @@ ___
 > Problem: 
 Predict which Tanzanian water pumps are functional, which need repairs, and which don't work at all. Predict one of these three classes based on a number of variables about what kind of pump is operating, when it was installed, and how it is managed. A smart understanding of which waterpoints will fail can improve maintenance operations and ensure that clean, potable water is available to communities across Tanzania.
 
-> Audience: 
+> Audience: Main audience is the pump management companies who handles repairs and construction, along with city officials who work with companies to make decisions on pump location and technology for the pumps used. 
 
-> Business outlook/questions:
-"How did you pick the question(s) that you did?"
-"Why are these questions important from a business perspective?"
-"How did you decide on the data cleaning options you performed?"
-"Why did you choose a given method or library?"
-"Why did you select those visualizations and what did you learn from each of them?"
-"Why did you pick those features as predictors?"
-"How would you interpret the results?"
-"How confident are you in the predictive quality of the results?"
-"What are some of the things that could cause the results to be wrong?"
+> Business Questions: Do older pumps need more repairs or are more prone to breaking? What is the relationship between population and working or nonworking pumps? Which type of pump to avoid?
+
+
+
+```python
+# # > Business outlook/questions:
+# # "How did you pick the question(s) that you did?"
+# based on which graphs and features were most important for determining class
+
+# # "Why are these questions important from a business perspective?"
+# they will help us to decide which locations, population concentrations, and types of pumps to focus on
+
+# # "How did you decide on the data cleaning options you performed?"
+# mainly, based on exploring the data to find a lot of repeat categoricals taht became redundant 
+# and useless information that was either not effective in determining class, such as constant variables 
+# or null values. 
+
+# # "Why did you choose a given method or library?"
+# i used the sklearn library of classification algorithms such as random forest for their resilience to
+# overfitting and xgbrf for the same reason. 
+
+# # "Why did you select those visualizations and what did you learn from each of them?"
+# i used the null value visualization which helped me to see that some columsn were matching in 
+# missing values from same rows. partial dependence plots were useful in determining how the most important 
+# features were effecting each classification to better understand why. 
+
+# # "Why did you pick those features as predictors?"
+# those were shown to be the most important and impactful in determining the class of the pumps, especially
+# once followed up with partial dependence plots for further explainability. 
+
+# # "How would you interpret the results?"
+# see interpretation at end of notebook
+
+# # "How confident are you in the predictive quality of the results?"
+# mostly confident about results for classification of working and nonworking pumps. functional but needing repairs 
+# classification needs to be tuned more. 
+
+# # "What are some of the things that could cause the results to be wrong?"
+# there were more weird values in the data, so, dirty data. needing more feature engineering in the future. 
+```
 
 ## feature desc.
 
@@ -172,41 +202,41 @@ from fsds_100719.imports import *
 
 
 <style  type="text/css" >
-</style><table id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26" ><caption>Loaded Packages and Handles</caption><thead>    <tr>        <th class="col_heading level0 col0" >Handle</th>        <th class="col_heading level0 col1" >Package</th>        <th class="col_heading level0 col2" >Description</th>    </tr></thead><tbody>
+</style><table id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26" ><caption>Loaded Packages and Handles</caption><thead>    <tr>        <th class="col_heading level0 col0" >Handle</th>        <th class="col_heading level0 col1" >Package</th>        <th class="col_heading level0 col2" >Description</th>    </tr></thead><tbody>
                 <tr>
-                                <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row0_col0" class="data row0 col0" >dp</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row0_col1" class="data row0 col1" >IPython.display</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row0_col2" class="data row0 col2" >Display modules with helpful display and clearing commands.</td>
+                                <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row0_col0" class="data row0 col0" >dp</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row0_col1" class="data row0 col1" >IPython.display</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row0_col2" class="data row0 col2" >Display modules with helpful display and clearing commands.</td>
             </tr>
             <tr>
-                                <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row1_col0" class="data row1 col0" >fs</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row1_col1" class="data row1 col1" >fsds_100719</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row1_col2" class="data row1 col2" >Custom data science bootcamp student package</td>
+                                <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row1_col0" class="data row1 col0" >fs</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row1_col1" class="data row1 col1" >fsds_100719</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row1_col2" class="data row1 col2" >Custom data science bootcamp student package</td>
             </tr>
             <tr>
-                                <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row2_col0" class="data row2 col0" >mpl</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row2_col1" class="data row2 col1" >matplotlib</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row2_col2" class="data row2 col2" >Matplotlib's base OOP module with formatting artists</td>
+                                <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row2_col0" class="data row2 col0" >mpl</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row2_col1" class="data row2 col1" >matplotlib</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row2_col2" class="data row2 col2" >Matplotlib's base OOP module with formatting artists</td>
             </tr>
             <tr>
-                                <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row3_col0" class="data row3 col0" >plt</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row3_col1" class="data row3 col1" >matplotlib.pyplot</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row3_col2" class="data row3 col2" >Matplotlib's matlab-like plotting module</td>
+                                <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row3_col0" class="data row3 col0" >plt</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row3_col1" class="data row3 col1" >matplotlib.pyplot</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row3_col2" class="data row3 col2" >Matplotlib's matlab-like plotting module</td>
             </tr>
             <tr>
-                                <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row4_col0" class="data row4 col0" >np</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row4_col1" class="data row4 col1" >numpy</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row4_col2" class="data row4 col2" >scientific computing with Python</td>
+                                <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row4_col0" class="data row4 col0" >np</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row4_col1" class="data row4 col1" >numpy</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row4_col2" class="data row4 col2" >scientific computing with Python</td>
             </tr>
             <tr>
-                                <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row5_col0" class="data row5 col0" >pd</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row5_col1" class="data row5 col1" >pandas</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row5_col2" class="data row5 col2" >High performance data structures and tools</td>
+                                <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row5_col0" class="data row5 col0" >pd</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row5_col1" class="data row5 col1" >pandas</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row5_col2" class="data row5 col2" >High performance data structures and tools</td>
             </tr>
             <tr>
-                                <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row6_col0" class="data row6 col0" >sns</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row6_col1" class="data row6 col1" >seaborn</td>
-                        <td id="T_63c0bfba_8d7e_11ea_b7bf_0026bb4edb26row6_col2" class="data row6 col2" >High-level data visualization library based on matplotlib</td>
+                                <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row6_col0" class="data row6 col0" >sns</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row6_col1" class="data row6 col1" >seaborn</td>
+                        <td id="T_5914f6e4_930f_11ea_9fb4_0026bb4edb26row6_col2" class="data row6 col2" >High-level data visualization library based on matplotlib</td>
             </tr>
     </tbody></table>
 
@@ -1910,12 +1940,12 @@ missingno.matrix(df)
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x1517295c18>
+    <matplotlib.axes._subplots.AxesSubplot at 0x1c1fd342e8>
 
 
 
 
-![png](output_25_1.png)
+![png](output_26_1.png)
 
 
 
@@ -2178,17 +2208,17 @@ for col in df.columns:
     -2.535985e+00       1
     -2.598965e+00       1
     Name: latitude, Length: 57517, dtype: int64
-    none                  3563
-    Shuleni               1748
-    Zahanati               830
-    Msikitini              535
-    Kanisani               323
-                          ... 
-    Omaya                    1
-    Olovolosi                1
-    Erasti Nziku             1
-    Kwa Mzee Mwakasala       1
-    Bp Bagamoyo              1
+    none                3563
+    Shuleni             1748
+    Zahanati             830
+    Msikitini            535
+    Kanisani             323
+                        ... 
+    Msemwa                 1
+    Kwa Kitweko            1
+    Kwa Sakina Amiri       1
+    Kwa Chide Wolde        1
+    Kwa Mzee Karoli        1
     Name: wpt_name, Length: 37400, dtype: int64
     0      58643
     6         81
@@ -2301,11 +2331,11 @@ for col in df.columns:
     Mdandu       231
     Nduruma      217
                 ... 
-    Korongoni      1
     Mkumbi         1
-    Nsemulwa       1
-    Sungwisi       1
+    Igogo          1
     Kapilula       1
+    Themi          1
+    Burungura      1
     Name: ward, Length: 2092, dtype: int64
     0       21381
     1        7025
@@ -2557,15 +2587,12 @@ df.loc[df['amount_tsh']==0]['status_group'].value_counts()
 # there are many pumps still functioning but still have 0 amount_tsh. keep colum for now with 0s listed
 ```
 
-### drop useless columns
+## Feature selection - drop useless columns
 
-
-```python
-# Don't need:
-# wpt_name - it's just name of the pump, not helpful. 
-# num_private - no description for this column. it's mostly 0s
-# recorded_by - it's a constant. useless.
-```
+Don't need:
+- Wpt_name - it's just name of the pump, not helpful. 
+- Num_private - no description for this column. it's mostly 0s
+- Recorded_by - it's a constant. useless.
 
 
 ```python
@@ -2628,76 +2655,76 @@ pd.plotting.scatter_matrix(df, figsize=(10,10))
 
 
 
-    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x1c21b27710>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c21f2dda0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1e240128>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c21ff3438>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1e223cf8>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c215042e8>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c21c767f0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x15174aadd8>],
-           [<matplotlib.axes._subplots.AxesSubplot object at 0x15174aae10>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c21f30940>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c21f43ef0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c21a574e0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c2138ea90>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1517522198>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x151745f630>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c218eebe0>],
-           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c21faa7f0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d04c780>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d03ed30>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c21f02320>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c219918d0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c21a03e80>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c21302470>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c212b1a20>],
-           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c212e6fd0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x15174305c0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x15173e1b70>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1a18fa8160>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d2cf710>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x10d79dcc0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x10d80e2b0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x10d83e860>],
-           [<matplotlib.axes._subplots.AxesSubplot object at 0x10d873e10>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x10d8b0400>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x15174cf9b0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1bd50f60>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1bd8c550>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1bdb9a20>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1bdedfd0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1c0215c0>],
-           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c1c5fbb70>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1cfbe160>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1cfec710>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d01ecc0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1e50f2b0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1e53d860>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1efd7e10>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f013400>],
-           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c1f0449b0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f075f60>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f0b4550>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f0e3b00>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f1220f0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f1556a0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f186c50>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f1c2240>],
-           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c1f1f47f0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f225da0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f261390>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f291940>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f2c4ef0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f3024e0>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f333a90>,
-            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f372080>]],
+    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x1c2357dc18>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c230b7320>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c231fac50>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1f7c2f60>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c22aa30f0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c2299c1d0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c2320e668>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1e59fa58>],
+           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c1e59fa90>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c22915a58>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c22e52b70>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c22ff3160>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818a54710>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818a55cc0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818ba32b0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818b59860>],
+           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c23545390>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c2302c400>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818c179b0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d51df60>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c2345d550>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c23490b00>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c22f2d0f0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c22f5f6a0>],
+           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c2288fc50>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c2284c240>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818ac47f0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818af7da0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c212c3390>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x10ecb5940>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818a76ef0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818b144e0>],
+           [<matplotlib.axes._subplots.AxesSubplot object at 0x1818b42a20>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1818c54fd0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1a1a53f5c0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d2fab70>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d338160>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d366710>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d398cc0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1d47d2b0>],
+           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c1d4ae860>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1e55de10>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1e5da400>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1e8569b0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1e888f60>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c1faf3550>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c205f5b00>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c206350f0>],
+           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c206636a0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c20696c50>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c206d5240>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c207047f0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c20735da0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c20773390>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c207a4940>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c207d7ef0>],
+           [<matplotlib.axes._subplots.AxesSubplot object at 0x1c208144e0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c20843a90>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c20882080>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c208b2630>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c208e4be0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c209221d0>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c20950780>,
+            <matplotlib.axes._subplots.AxesSubplot object at 0x1c20983d30>]],
           dtype=object)
 
 
 
 
-![png](output_49_1.png)
+![png](output_50_1.png)
 
 
 
@@ -3322,7 +3349,7 @@ X.head()
 # that's a crap load of columns. I'm going to drop some repeats because some of them are repeating information. 
 ```
 
-## drop more columns that have repeat info
+## Feature selection - drop more columns that have repeat info
 
 
 ```python
@@ -4069,17 +4096,17 @@ timer.stop()
 # timer
 ```
 
-    [i] Timer started at 	        05/03/20 - 02:07:35 PM
-    [i] Timer started at 	        05/03/20 - 02:07:35 PM
+    [i] Timer started at 	        05/10/20 - 03:45:43 PM
+    [i] Timer started at 	        05/10/20 - 03:45:43 PM
     
     
     ------------------------------------------------------------
     	TIMER LOG
     ------------------------------------------------------------
-    [i] Timer started at 	        05/03/20 - 02:07:35 PM
-    [i] Timer started at 	        05/03/20 - 02:07:35 PM
-    [i] Timer ended at 	        05/03/20 - 02:07:35 PM
-    			- Total time = 0:00:00.000133
+    [i] Timer started at 	        05/10/20 - 03:45:43 PM
+    [i] Timer started at 	        05/10/20 - 03:45:43 PM
+    [i] Timer ended at 	        05/10/20 - 03:45:43 PM
+    			- Total time = 0:00:00.000425
     ------------------------------------------------------------
 
 
@@ -4103,7 +4130,7 @@ def evaluate_model(y_true, y_pred,X_true,clf,importance_top_n):
     # subplots for confusion matrix and bar plot
     fig, ax = plt.subplots(figsize=(12,6),ncols=2)
     metrics.plot_confusion_matrix(clf,X_true,y_true,cmap="Blues",
-                                  normalize='true',ax=ax[0])
+                                  normalize='true', xticks_rotation='vertical', ax=ax[0])
     
     df_importance = pd.Series(clf.feature_importances_,index=X_train.columns)
     df_importance.sort_values(ascending=True).tail(importance_top_n).plot(
@@ -4252,27 +4279,20 @@ evaluate_model(y_test,y_preds,X_test,clf,15)
 
 
 
-![png](output_81_1.png)
+![png](output_82_1.png)
 
 
 ### vanilla tree eval
 
+- Class functional and nonfunction are scoring pretty well, 0.8 and 0.77. 
+- Functional need repair not so much with 0.38 recall. - means it only correctly classed 35%, with 44% incorrectly classed as functional. Need higher recall to get some of thosed missed that need repair.
+- Important features seem to makes sense, with lat/long and location being telling, along with quantity (whether the well is dry or not)
+- Construction year is different because there are still a lot of 0s in that column
+- Management group could be related to poor management quality and tactics
+- Extraction type gravity and source type borehole could be related
 
-```python
-# class functional and nonfunction are scoring pretty well, 0.8 and 0.77. 
-# functional need repair not so much with 0.38 recall. - means it only correctly classed 35%, with 44% incorrectly classed as functional. Need higher recall to get some of thosed missed that need repair.
-# important features seem to makes sense, with lat/long and location being telling, along with quantity (whether the well is dry or not)
-# construction year is different because there are still a lot of 0s in that column
-# management group could be related to poor management quality and tactics
-# extraction type gravity and source type borehole could be related
-
-# most telling signs, location (long/lat), how much water is left in the well (quantity_grp), sealevel (gps height)
-```
-
-
-```python
-# theres a lot of 0s in the construction year column - should i change the zeros to unknown and use cat, or fil with 1900 and use as numeric
-```
+- Most telling signs, location (long/lat), how much water is left in the well (quantity_grp), sealevel (gps height)
+- Theres a lot of 0s in the construction year column - should i change the zeros to unknown and use cat, or fil with 1900 and use as numeric.
 
 
 ### this tree visual is hashed out to save on load time. saved png is in folder as "vanilla_tree.png"
@@ -4344,8 +4364,8 @@ pd.Series(smote_y_train).value_counts()
 
 
     non functional             23428
-    functional                 23428
     functional needs repair    23428
+    functional                 23428
     dtype: int64
 
 
@@ -4383,7 +4403,7 @@ y_preds = clf.predict(X_test)
 print('Accuracy: ', accuracy_score(y_test, y_preds))
 ```
 
-    Accuracy:  0.7441133569493644
+    Accuracy:  0.7496006112384525
 
 
 
@@ -4393,13 +4413,13 @@ evaluate_model(y_test,y_preds,X_test,clf,15)
 
                              precision    recall  f1-score   support
     
-                 functional       0.81      0.77      0.79      7961
-    functional needs repair       0.32      0.44      0.37       945
-             non functional       0.75      0.76      0.76      5491
+                 functional       0.82      0.77      0.79      7961
+    functional needs repair       0.31      0.43      0.36       945
+             non functional       0.76      0.77      0.77      5491
     
-                   accuracy                           0.74     14397
+                   accuracy                           0.75     14397
                   macro avg       0.63      0.66      0.64     14397
-               weighted avg       0.76      0.74      0.75     14397
+               weighted avg       0.76      0.75      0.75     14397
     
 
 
@@ -4423,16 +4443,13 @@ evaluate_model(y_test,y_preds,X_test,clf,15)
 
 ### comments on class imbalance vanilla tree
 
+- The accuracy score is pretty much the same
+- Functional precision went up, funtional repair went down
+- Functional recall went down, functional repair recall went up
+- Functional repair and nonfunction f1 score both went up
 
-```python
-# the accuracy score is pretty much the same
-#  functional precision went up, funtional repair went down
-# functional recall went down, functional repair recall went up
-# functional repair and nonfunction f1 score both went up
 
-```
-
-## drop least important cols after vanilla tree model
+## Feature selection - drop least important cols after vanilla tree model
 
 ### cols not listed in top features
 
@@ -4464,28 +4481,23 @@ df.columns
 
 
 
+cols to delete:
+- basin - Geographic water basin ** - don't need, cat, using region code
+- region - Geographic location ** - don't need, cat, using region code
+- district_code - Geographic location (coded) ++ - don't need, using region code
+- lga - Geographic location - local govt area, could be used for political question
+- extraction_type - The kind of extraction the waterpoint uses ++ ** - don't need, has too many nondescript cats
+- payment - What the water costs ** - don't need, repeat of payment type
+- source - The source of the water ** - don't need, source type is more concise
+- source_class - The source of the water ++ ** - don't need, source type has more descript groups
 
-```python
-# """
-# cols to delete:
-# basin - Geographic water basin ** - don't need, cat, using region code
-# region - Geographic location ** - don't need, cat, using region code
-# district_code - Geographic location (coded) ++ - don't need, using region code
+keep these for now
+- extraction_type_group - The kind of extraction the waterpoint uses ++ ** - don't need, too many cats
+- management - How the waterpoint is managed ++ ** - don't need, to many cats, have mgmt group to use instead
+- water_quality - The quality of the water ** - don't need, less descript compared to quality group
+- quantity - The quantity of water ** - don't need, repeat of quantity group
+- waterpoint_type - The kind of waterpoint ** - don't need, waterpoint type group is more concise
 
-# keep these for now
-# lga - Geographic location - local govt area, could be used for political question
-# extraction_type - The kind of extraction the waterpoint uses ++ ** - don't need, has too many nondescript cats
-# extraction_type_group - The kind of extraction the waterpoint uses ++ ** - don't need, too many cats
-# management - How the waterpoint is managed ++ ** - don't need, to many cats, have mgmt group to use instead
-# payment - What the water costs ** - don't need, repeat of payment type
-# water_quality - The quality of the water ** - don't need, less descript compared to quality group
-# quantity - The quantity of water ** - don't need, repeat of quantity group
-# source - The source of the water ** - don't need, source type is more concise
-# source_class - The source of the water ++ ** - don't need, source type has more descript groups
-# waterpoint_type - The kind of waterpoint ** - don't need, waterpoint type group is more concise
-
-# """
-```
 
 ## split df into X,y
 
@@ -5085,9 +5097,9 @@ pd.Series(smote_y_train).value_counts()
 
 
 
+    non functional             23428
     functional needs repair    23428
     functional                 23428
-    non functional             23428
     dtype: int64
 
 
@@ -5174,12 +5186,12 @@ y_preds = grid_tree.predict(X_test)
 evaluate_model(y_test,y_preds,X_test,grid_tree,15)
 ```
 
-    0.7416128360075016
+    0.7432103910536917
                              precision    recall  f1-score   support
     
                  functional       0.81      0.77      0.79      7961
-    functional needs repair       0.30      0.42      0.35       945
-             non functional       0.76      0.76      0.76      5491
+    functional needs repair       0.31      0.42      0.35       945
+             non functional       0.76      0.75      0.76      5491
     
                    accuracy                           0.74     14397
                   macro avg       0.62      0.65      0.63     14397
@@ -5190,8 +5202,6 @@ evaluate_model(y_test,y_preds,X_test,grid_tree,15)
 
 ![png](output_122_1.png)
 
-
-### eval new tree model
 
 
 ```python
@@ -5207,13 +5217,12 @@ evaluate_model(y_test,y_preds,X_test,grid_tree,15)
 #            weighted avg       0.76      0.75      0.76     14397
 ```
 
+### eval new tree model
 
-```python
-# functional precision went down, functional repair went up, 
-# functional recall went down, functional repair went up, nonfunc went down
-# f1, functional and repair went down, nonfunc went up
-# looks like accuracy went down
-```
+- Functional precision went down, functional repair went up, 
+- Functional recall went down, functional repair went up, nonfunc went down
+- F1, functional and repair went down, nonfunc went up
+- Looks like accuracy went down
 
 ### pickle the tree grid model
 
@@ -5276,13 +5285,13 @@ timer.stop()
 
 ```
 
-    [i] Timer started at 	        05/03/20 - 02:35:17 PM
-    [i] Timer started at 	        05/03/20 - 02:35:17 PM
+    [i] Timer started at 	        05/10/20 - 03:50:12 PM
+    [i] Timer started at 	        05/10/20 - 03:50:12 PM
                              precision    recall  f1-score   support
     
-                 functional       0.82      0.83      0.83      7961
-    functional needs repair       0.38      0.42      0.40       945
-             non functional       0.81      0.78      0.80      5491
+                 functional       0.82      0.84      0.83      7961
+    functional needs repair       0.37      0.41      0.39       945
+             non functional       0.82      0.78      0.80      5491
     
                    accuracy                           0.79     14397
                   macro avg       0.67      0.68      0.67     14397
@@ -5294,10 +5303,10 @@ timer.stop()
 ![png](output_131_1.png)
 
 
-    0.9999573160320984
-    0.7854414114051539
-    [i] Timer ended at 	        05/03/20 - 02:36:00 PM
-    			- Total time = 0:00:42.620828
+    0.9999857720106995
+    0.787872473431965
+    [i] Timer ended at 	        05/10/20 - 03:51:03 PM
+    			- Total time = 0:00:50.561585
 
 
 
@@ -5315,14 +5324,11 @@ timer.stop()
 
 ### comments random forest
 
-
-```python
-# precision, func went up, func repair up, nonfunc up
-# recall func down, func repair down, nonfunc up
-# f1 func up, repair func down, nonfunc up
-# accuracy score went up
-# best performance model so far
-```
+- Precision, func went up, func repair up, nonfunc up
+- Recall func down, func repair down, nonfunc up
+- F1 func up, repair func down, nonfunc up
+- Accuracy score went up
+- Best performance model so far
 
 ## Grid search for random forest best params
 
@@ -5354,22 +5360,6 @@ grid_rf = GridSearchCV(rf_clf,param_grid,cv=3)
 # grid_rf.best_params_
 ```
 
-    [i] Timer started at 	        04/30/20 - 04:07:49 PM
-    [i] Timer started at 	        04/30/20 - 04:07:49 PM
-    [i] Timer ended at 	        04/30/20 - 05:26:18 PM
-    			- Total time = 1:18:28.977555
-
-
-
-
-
-    {'criterion': 'entropy',
-     'max_depth': None,
-     'max_features': 20,
-     'min_samples_leaf': 1}
-
-
-
 ## create new random forest with gridsearch params
 
 
@@ -5396,8 +5386,8 @@ evaluate_model(y_test,y_preds,X_test, grid_rf,15)
 
 ```
 
-    0.9999573160320984
-    0.7888448982426894
+    0.9999857720106995
+    0.7880113912620685
                              precision    recall  f1-score   support
     
                  functional       0.82      0.84      0.83      7961
@@ -5430,19 +5420,97 @@ evaluate_model(y_test,y_preds,X_test, grid_rf,15)
 
 ### eval new randomforest grid model
 
-
-```python
-# judging from scores, looks like grid search rf is over fitting but I thought rf's 
-# were supposed to be resilient to that
-# recall, func went down
-# f1 func repair went up, 
-# accuracy stayed the same
-# so only slightly better. 
-```
-
-# QUESTION: scale data?
+- Judging from scores, looks like grid search rf is over fitting but I thought rf's were supposed to be resilient to that
+- Recall, func went down
+- F1 func repair went up, 
+- Accuracy stayed the same
+- So only slightly better. 
 
 ## XGBoost randomforest
+
+### XGBRF with non SMOTE training data returns an error
+
+
+```python
+## Start timer and fit search
+timer = Timer()
+timer.start()
+
+## import xgboost RF
+from xgboost import XGBRFClassifier,XGBClassifier
+
+## Fit and Evaluate
+xgb_rf = XGBRFClassifier(random_state=6)
+# xgb_rf.fit(smote_X_train, smote_y_train)
+xgb_rf.fit(smote_X_train, smote_y_train)
+
+
+# print(xgb_rf.score(smote_X_train,smote_y_train))
+print(xgb_rf.score(X_train,y_train))
+
+print(xgb_rf.score(X_test,y_test))
+
+y_preds = xgb_rf.predict(X_test)
+
+evaluate_model(y_test,y_preds,X_test,xgb_rf,15)
+
+## Stop time
+timer.stop()
+```
+
+    [i] Timer started at 	        05/10/20 - 03:52:32 PM
+    [i] Timer started at 	        05/10/20 - 03:52:32 PM
+
+
+
+    ---------------------------------------------------------------------------
+
+    ValueError                                Traceback (most recent call last)
+
+    <ipython-input-73-71a6a2214391> in <module>
+         13 
+         14 # print(xgb_rf.score(smote_X_train,smote_y_train))
+    ---> 15 print(xgb_rf.score(X_train,y_train))
+         16 
+         17 print(xgb_rf.score(X_test,y_test))
+
+
+    //anaconda3/envs/learn-env/lib/python3.6/site-packages/sklearn/base.py in score(self, X, y, sample_weight)
+        367         """
+        368         from .metrics import accuracy_score
+    --> 369         return accuracy_score(y, self.predict(X), sample_weight=sample_weight)
+        370 
+        371 
+
+
+    //anaconda3/envs/learn-env/lib/python3.6/site-packages/xgboost/sklearn.py in predict(self, data, output_margin, ntree_limit, validate_features)
+        789                                                  output_margin=output_margin,
+        790                                                  ntree_limit=ntree_limit,
+    --> 791                                                  validate_features=validate_features)
+        792         if output_margin:
+        793             # If output_margin is active, simply return the scores
+
+
+    //anaconda3/envs/learn-env/lib/python3.6/site-packages/xgboost/core.py in predict(self, data, output_margin, ntree_limit, pred_leaf, pred_contribs, approx_contribs, pred_interactions, validate_features)
+       1282 
+       1283         if validate_features:
+    -> 1284             self._validate_features(data)
+       1285 
+       1286         length = c_bst_ulong()
+
+
+    //anaconda3/envs/learn-env/lib/python3.6/site-packages/xgboost/core.py in _validate_features(self, data)
+       1688 
+       1689                 raise ValueError(msg.format(self.feature_names,
+    -> 1690                                             data.feature_names))
+       1691 
+       1692     def get_split_value_histogram(self, feature, fmap='', bins=None, as_pandas=True):
+
+
+    ValueError: feature_names mismatch: ['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'f13', 'f14', 'f15', 'f16', 'f17', 'f18', 'f19', 'f20', 'f21', 'f22', 'f23', 'f24', 'f25', 'f26', 'f27', 'f28', 'f29', 'f30', 'f31', 'f32', 'f33', 'f34', 'f35', 'f36', 'f37', 'f38', 'f39', 'f40', 'f41', 'f42', 'f43', 'f44', 'f45', 'f46', 'f47', 'f48', 'f49', 'f50', 'f51', 'f52', 'f53', 'f54', 'f55', 'f56', 'f57', 'f58', 'f59', 'f60', 'f61', 'f62', 'f63', 'f64', 'f65', 'f66', 'f67', 'f68', 'f69', 'f70', 'f71', 'f72', 'f73', 'f74', 'f75', 'f76', 'f77', 'f78', 'f79', 'f80', 'f81', 'f82', 'f83', 'f84', 'f85', 'f86', 'f87', 'f88', 'f89', 'f90', 'f91', 'f92', 'f93', 'f94', 'f95', 'f96', 'f97', 'f98', 'f99', 'f100', 'f101', 'f102', 'f103', 'f104', 'f105', 'f106', 'f107', 'f108', 'f109'] ['amount_tsh', 'gps_height', 'longitude', 'latitude', 'population', 'construction_year', 'basin_Internal', 'basin_Lake Nyasa', 'basin_Lake Rukwa', 'basin_Lake Tanganyika', 'basin_Lake Victoria', 'basin_Pangani', 'basin_Rufiji', 'basin_Ruvuma / Southern Coast', 'basin_Wami / Ruvu', 'region_Arusha', 'region_Dar es Salaam', 'region_Dodoma', 'region_Iringa', 'region_Kagera', 'region_Kigoma', 'region_Kilimanjaro', 'region_Lindi', 'region_Manyara', 'region_Mara', 'region_Mbeya', 'region_Morogoro', 'region_Mtwara', 'region_Mwanza', 'region_Pwani', 'region_Rukwa', 'region_Ruvuma', 'region_Shinyanga', 'region_Singida', 'region_Tabora', 'region_Tanga', 'extraction_type_group_afridev', 'extraction_type_group_gravity', 'extraction_type_group_india mark ii', 'extraction_type_group_india mark iii', 'extraction_type_group_mono', 'extraction_type_group_nira/tanira', 'extraction_type_group_other', 'extraction_type_group_other handpump', 'extraction_type_group_other motorpump', 'extraction_type_group_rope pump', 'extraction_type_group_submersible', 'extraction_type_group_swn 80', 'extraction_type_group_wind-powered', 'management_company', 'management_other', 'management_other - school', 'management_parastatal', 'management_private operator', 'management_trust', 'management_unknown', 'management_vwc', 'management_water authority', 'management_water board', 'management_wua', 'management_wug', 'management_group_commercial', 'management_group_other', 'management_group_parastatal', 'management_group_unknown', 'management_group_user-group', 'water_quality_coloured', 'water_quality_fluoride', 'water_quality_fluoride abandoned', 'water_quality_milky', 'water_quality_salty', 'water_quality_salty abandoned', 'water_quality_soft', 'water_quality_unknown', 'quality_group_colored', 'quality_group_fluoride', 'quality_group_good', 'quality_group_milky', 'quality_group_salty', 'quality_group_unknown', 'quantity_dry', 'quantity_enough', 'quantity_insufficient', 'quantity_seasonal', 'quantity_unknown', 'quantity_group_dry', 'quantity_group_enough', 'quantity_group_insufficient', 'quantity_group_seasonal', 'quantity_group_unknown', 'source_type_borehole', 'source_type_dam', 'source_type_other', 'source_type_rainwater harvesting', 'source_type_river/lake', 'source_type_shallow well', 'source_type_spring', 'waterpoint_type_cattle trough', 'waterpoint_type_communal standpipe', 'waterpoint_type_communal standpipe multiple', 'waterpoint_type_dam', 'waterpoint_type_hand pump', 'waterpoint_type_improved spring', 'waterpoint_type_other', 'waterpoint_type_group_cattle trough', 'waterpoint_type_group_communal standpipe', 'waterpoint_type_group_dam', 'waterpoint_type_group_hand pump', 'waterpoint_type_group_improved spring', 'waterpoint_type_group_other']
+    expected f90, f35, f94, f12, f71, f61, f22, f81, f89, f31, f98, f28, f105, f91, f77, f17, f56, f42, f20, f6, f93, f57, f100, f92, f95, f55, f108, f97, f19, f70, f101, f58, f13, f21, f41, f46, f26, f106, f109, f53, f96, f62, f80, f59, f50, f33, f54, f107, f37, f36, f47, f9, f65, f27, f5, f29, f85, f1, f73, f11, f99, f102, f79, f88, f67, f38, f15, f103, f63, f7, f34, f39, f52, f16, f45, f3, f24, f78, f30, f48, f60, f10, f66, f43, f32, f51, f4, f14, f2, f64, f18, f8, f74, f69, f82, f83, f75, f25, f104, f76, f86, f68, f23, f72, f49, f0, f40, f84, f44, f87 in input data
+    training data did not have the following fields: region_Tabora, extraction_type_group_india mark ii, region_Rukwa, extraction_type_group_other handpump, extraction_type_group_swn 80, management_other - school, region_Tanga, region_Ruvuma, waterpoint_type_hand pump, source_type_other, quantity_group_unknown, quantity_group_seasonal, management_vwc, region_Iringa, region_Manyara, source_type_spring, extraction_type_group_nira/tanira, waterpoint_type_improved spring, quantity_insufficient, waterpoint_type_communal standpipe, management_private operator, waterpoint_type_group_dam, source_type_dam, extraction_type_group_submersible, source_type_river/lake, basin_Lake Nyasa, quantity_group_insufficient, region_Dodoma, construction_year, management_water authority, basin_Lake Victoria, quantity_enough, basin_Internal, source_type_rainwater harvesting, management_unknown, extraction_type_group_other, extraction_type_group_other motorpump, extraction_type_group_rope pump, region_Kagera, region_Morogoro, waterpoint_type_group_cattle trough, waterpoint_type_communal standpipe multiple, region_Mtwara, waterpoint_type_group_other, management_other, management_water board, region_Kilimanjaro, management_group_user-group, region_Kigoma, quality_group_salty, water_quality_unknown, water_quality_fluoride, region_Mwanza, management_parastatal, water_quality_coloured, quality_group_unknown, region_Singida, water_quality_salty, region_Pwani, quantity_group_dry, basin_Lake Rukwa, region_Shinyanga, region_Dar es Salaam, management_wua, region_Mbeya, source_type_borehole, gps_height, waterpoint_type_group_hand pump, population, management_group_commercial, management_group_parastatal, quality_group_colored, quantity_unknown, water_quality_salty abandoned, region_Arusha, management_wug, water_quality_fluoride abandoned, quantity_dry, waterpoint_type_cattle trough, extraction_type_group_afridev, water_quality_milky, basin_Pangani, quality_group_fluoride, basin_Lake Tanganyika, management_trust, waterpoint_type_group_improved spring, waterpoint_type_dam, amount_tsh, basin_Rufiji, extraction_type_group_india mark iii, extraction_type_group_gravity, water_quality_soft, extraction_type_group_wind-powered, management_company, extraction_type_group_mono, region_Lindi, quantity_seasonal, longitude, quality_group_good, waterpoint_type_group_communal standpipe, region_Mara, quality_group_milky, management_group_unknown, latitude, basin_Wami / Ruvu, source_type_shallow well, basin_Ruvuma / Southern Coast, waterpoint_type_other, management_group_other, quantity_group_enough
+
 
 
 ```python
@@ -5459,11 +5527,11 @@ smote_X_train
            [6.00000000e+00, 1.53800000e+03, 3.74490016e+01, ...,
             0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
            ...,
-           [0.00000000e+00, 0.00000000e+00, 3.39745060e+01, ...,
-            1.00000000e+00, 0.00000000e+00, 0.00000000e+00],
-           [0.00000000e+00, 1.78468986e+03, 3.58347927e+01, ...,
+           [3.00000000e+02, 1.20439619e+03, 3.76642084e+01, ...,
             0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
-           [0.00000000e+00, 0.00000000e+00, 3.60039156e+01, ...,
+           [0.00000000e+00, 4.30053584e+02, 3.90300429e+01, ...,
+            0.00000000e+00, 0.00000000e+00, 5.26791798e-01],
+           [0.00000000e+00, 0.00000000e+00, 3.35706116e+01, ...,
             0.00000000e+00, 0.00000000e+00, 0.00000000e+00]])
 
 
@@ -6040,10 +6108,10 @@ evaluate_model(y_test,y_preds,X_test,xgb_rf,15)
 timer.stop()
 ```
 
-    [i] Timer started at 	        05/03/20 - 02:39:23 PM
-    [i] Timer started at 	        05/03/20 - 02:39:23 PM
-    0.6307552216720733
-    0.6104049454747517
+    [i] Timer started at 	        05/10/20 - 04:04:33 PM
+    [i] Timer started at 	        05/10/20 - 04:04:33 PM
+    0.6315093051050026
+    0.6102660276446482
                              precision    recall  f1-score   support
     
                  functional       0.69      0.74      0.71      7961
@@ -6057,68 +6125,16 @@ timer.stop()
 
 
 
-![png](output_150_1.png)
+![png](output_151_1.png)
 
 
-    [i] Timer ended at 	        05/03/20 - 02:41:40 PM
-    			- Total time = 0:02:17.277653
-
-
-### XGBRF with non SMOTE training data
-
-
-```python
-## Start timer and fit search
-timer = Timer()
-timer.start()
-
-## import xgboost RF
-from xgboost import XGBRFClassifier,XGBClassifier
-
-## Fit and Evaluate
-xgb_rf = XGBRFClassifier(random_state=6)
-# xgb_rf.fit(smote_X_train, smote_y_train)
-xgb_rf.fit(X_train, y_train)
-
-
-# print(xgb_rf.score(smote_X_train,smote_y_train))
-print(xgb_rf.score(X_train,y_train))
-
-print(xgb_rf.score(X_test,y_test))
-
-y_preds = xgb_rf.predict(X_test)
-
-evaluate_model(y_test,y_preds,X_test,xgb_rf,15)
-
-## Stop time
-timer.stop()
-```
-
-    [i] Timer started at 	        05/03/20 - 02:41:40 PM
-    [i] Timer started at 	        05/03/20 - 02:41:40 PM
-    0.6942187029705262
-    0.7062582482461623
-                             precision    recall  f1-score   support
-    
-                 functional       0.67      0.97      0.79      7961
-    functional needs repair       0.57      0.08      0.14       945
-             non functional       0.89      0.44      0.59      5491
-    
-                   accuracy                           0.71     14397
-                  macro avg       0.71      0.49      0.50     14397
-               weighted avg       0.74      0.71      0.67     14397
-    
-
-
-
-![png](output_152_1.png)
-
-
-    [i] Timer ended at 	        05/03/20 - 02:43:05 PM
-    			- Total time = 0:01:24.973088
+    [i] Timer ended at 	        05/10/20 - 04:07:15 PM
+    			- Total time = 0:02:42.235801
 
 
 ### comments on XGB
+
+> Looks like testing performed better than training. Don't know how.
 
 ## Grid search for XGB random forest
 
@@ -6212,19 +6228,19 @@ evaluate_model(y_test,y_preds,X_test, grid_xgbrf_bestparams,15)
 timer.stop()
 ```
 
-    [i] Timer started at 	        05/03/20 - 02:45:53 PM
-    [i] Timer started at 	        05/03/20 - 02:45:53 PM
-    0.6853622446075921
-    0.6606237410571647
+    [i] Timer started at 	        05/10/20 - 04:07:15 PM
+    [i] Timer started at 	        05/10/20 - 04:07:15 PM
+    0.6891184337829378
+    0.6618740015280962
                              precision    recall  f1-score   support
     
-                 functional       0.74      0.76      0.75      7961
-    functional needs repair       0.17      0.46      0.25       945
-             non functional       0.82      0.55      0.66      5491
+                 functional       0.75      0.75      0.75      7961
+    functional needs repair       0.17      0.48      0.26       945
+             non functional       0.82      0.56      0.66      5491
     
                    accuracy                           0.66     14397
-                  macro avg       0.58      0.59      0.55     14397
-               weighted avg       0.74      0.66      0.68     14397
+                  macro avg       0.58      0.60      0.56     14397
+               weighted avg       0.74      0.66      0.69     14397
     
 
 
@@ -6232,19 +6248,363 @@ timer.stop()
 ![png](output_158_1.png)
 
 
-    [i] Timer ended at 	        05/03/20 - 02:47:11 PM
-    			- Total time = 0:01:17.828795
+    [i] Timer ended at 	        05/10/20 - 04:08:43 PM
+    			- Total time = 0:01:27.561826
 
 
 ### eval new randomforest grid model
 
+- It's performing mediocre at best. Can barely predict above 50% for nonfunctional pumps.
+- Random forest with best params peformed better with accuracy score of .79, compared to this .67.
+
+# Final best model - Randomforest
+
 
 ```python
-# it's performing mediocre at best. can barely predict above 50% for nonfunctional pumps
-# random forest with best params peformed better with accuracy score of .79, compared to this .67
+## Start timer and fit search
+timer = Timer()
+timer.start()
+
+
+# ## Fit model
+best_params = {'criterion': 'entropy',
+                 'max_depth': None,
+                 'max_features': 20,
+                 'min_samples_leaf': 1}
+
+# hard code in best params 
+grid_rf = RandomForestClassifier(**best_params, random_state=6)
+grid_rf.fit(smote_X_train, smote_y_train)
+
+# eval model
+y_preds = grid_rf.predict(X_test)
+evaluate_model(y_test,y_preds,X_test, grid_rf,10)
+
+## Stop time
+timer.stop()
 ```
 
-# run final test data
+    [i] Timer started at 	        05/10/20 - 04:08:43 PM
+    [i] Timer started at 	        05/10/20 - 04:08:43 PM
+                             precision    recall  f1-score   support
+    
+                 functional       0.82      0.84      0.83      7961
+    functional needs repair       0.38      0.42      0.40       945
+             non functional       0.82      0.78      0.80      5491
+    
+                   accuracy                           0.79     14397
+                  macro avg       0.67      0.68      0.68     14397
+               weighted avg       0.79      0.79      0.79     14397
+    
+
+
+
+![png](output_162_1.png)
+
+
+    [i] Timer ended at 	        05/10/20 - 04:10:03 PM
+    			- Total time = 0:01:19.905944
+
+
+
+```python
+print(grid_rf.score(smote_X_train,smote_y_train))
+print(grid_rf.score(X_test,y_test))
+```
+
+    0.9999857720106995
+    0.7880113912620685
+
+
+# iNTERPRET
+
+### Partial Dependence Plots
+Will show how each feature effects classification.
+
+
+```python
+top_features = pd.Series(grid_rf.feature_importances_,index=X_train.columns).sort_values(ascending=False).head(10)
+feature_names = [i for i in X_test.columns if X_test[i].dtype in [np.int64] or [np.float64]]
+
+```
+
+
+```python
+top_features
+```
+
+
+
+
+    longitude                        0.148220
+    latitude                         0.144684
+    gps_height                       0.062059
+    construction_year                0.049454
+    population                       0.043126
+    quantity_dry                     0.041890
+    quantity_group_dry               0.031925
+    extraction_type_group_gravity    0.031025
+    amount_tsh                       0.023807
+    quantity_enough                  0.018462
+    dtype: float64
+
+
+
+
+```python
+# don't know how to get indexes from top features so doing it manually
+top_features_list = ['longitude','latitude', 'gps_height','construction_year', 'quantity_dry','population',
+                     'quantity_group_dry','extraction_type_group_gravity','amount_tsh', 'quantity_group_enough']
+```
+
+
+```python
+# install pdp if you don't have it
+# !pip install pdpbox
+```
+
+
+```python
+feature_names
+```
+
+
+
+
+    ['amount_tsh',
+     'gps_height',
+     'longitude',
+     'latitude',
+     'population',
+     'construction_year',
+     'basin_Internal',
+     'basin_Lake Nyasa',
+     'basin_Lake Rukwa',
+     'basin_Lake Tanganyika',
+     'basin_Lake Victoria',
+     'basin_Pangani',
+     'basin_Rufiji',
+     'basin_Ruvuma / Southern Coast',
+     'basin_Wami / Ruvu',
+     'region_Arusha',
+     'region_Dar es Salaam',
+     'region_Dodoma',
+     'region_Iringa',
+     'region_Kagera',
+     'region_Kigoma',
+     'region_Kilimanjaro',
+     'region_Lindi',
+     'region_Manyara',
+     'region_Mara',
+     'region_Mbeya',
+     'region_Morogoro',
+     'region_Mtwara',
+     'region_Mwanza',
+     'region_Pwani',
+     'region_Rukwa',
+     'region_Ruvuma',
+     'region_Shinyanga',
+     'region_Singida',
+     'region_Tabora',
+     'region_Tanga',
+     'extraction_type_group_afridev',
+     'extraction_type_group_gravity',
+     'extraction_type_group_india mark ii',
+     'extraction_type_group_india mark iii',
+     'extraction_type_group_mono',
+     'extraction_type_group_nira/tanira',
+     'extraction_type_group_other',
+     'extraction_type_group_other handpump',
+     'extraction_type_group_other motorpump',
+     'extraction_type_group_rope pump',
+     'extraction_type_group_submersible',
+     'extraction_type_group_swn 80',
+     'extraction_type_group_wind-powered',
+     'management_company',
+     'management_other',
+     'management_other - school',
+     'management_parastatal',
+     'management_private operator',
+     'management_trust',
+     'management_unknown',
+     'management_vwc',
+     'management_water authority',
+     'management_water board',
+     'management_wua',
+     'management_wug',
+     'management_group_commercial',
+     'management_group_other',
+     'management_group_parastatal',
+     'management_group_unknown',
+     'management_group_user-group',
+     'water_quality_coloured',
+     'water_quality_fluoride',
+     'water_quality_fluoride abandoned',
+     'water_quality_milky',
+     'water_quality_salty',
+     'water_quality_salty abandoned',
+     'water_quality_soft',
+     'water_quality_unknown',
+     'quality_group_colored',
+     'quality_group_fluoride',
+     'quality_group_good',
+     'quality_group_milky',
+     'quality_group_salty',
+     'quality_group_unknown',
+     'quantity_dry',
+     'quantity_enough',
+     'quantity_insufficient',
+     'quantity_seasonal',
+     'quantity_unknown',
+     'quantity_group_dry',
+     'quantity_group_enough',
+     'quantity_group_insufficient',
+     'quantity_group_seasonal',
+     'quantity_group_unknown',
+     'source_type_borehole',
+     'source_type_dam',
+     'source_type_other',
+     'source_type_rainwater harvesting',
+     'source_type_river/lake',
+     'source_type_shallow well',
+     'source_type_spring',
+     'waterpoint_type_cattle trough',
+     'waterpoint_type_communal standpipe',
+     'waterpoint_type_communal standpipe multiple',
+     'waterpoint_type_dam',
+     'waterpoint_type_hand pump',
+     'waterpoint_type_improved spring',
+     'waterpoint_type_other',
+     'waterpoint_type_group_cattle trough',
+     'waterpoint_type_group_communal standpipe',
+     'waterpoint_type_group_dam',
+     'waterpoint_type_group_hand pump',
+     'waterpoint_type_group_improved spring',
+     'waterpoint_type_group_other']
+
+
+
+
+```python
+# from sklearn.inspection import plot_partial_dependence as pdp
+
+from pdpbox import pdp, get_dataset, info_plots
+    
+for feat in top_features_list:
+    
+    pdp_dist = pdp.pdp_isolate(model=grid_rf, dataset=X_test, model_features=feature_names, feature=feat)
+    
+    plot_params = {
+            # plot title and subtitle
+            'title': 'PDP for feature "%s"' % feat,
+#             'subtitle': "Number of unique grid points: %d" % n_grids,
+            'title_fontsize': 15,
+            'subtitle_fontsize': 12,
+            'font_family': 'Arial',
+            # matplotlib color map for ICE lines
+            'line_cmap': 'Blues',
+            'xticks_rotation': -90,
+            # pdp line color, highlight color and line width
+            'pdp_color': '#1A4E5D',
+            'pdp_hl_color': '#FEDC00',
+            'pdp_linewidth': 1.5,
+            # horizon zero line color and with
+            'zero_color': '#E75438',
+            'zero_linewidth': 1,
+            # pdp std fill color and alpha
+            'fill_color': '#66C2D7',
+            'fill_alpha': 0.2,
+            # marker size for pdp line
+            'markersize': 3.5}
+    
+    pdp.pdp_plot(pdp_dist, feat, figsize=(20,6), ncols=3, plot_params=plot_params)
+    plt.show()
+```
+
+
+![png](output_171_0.png)
+
+
+
+![png](output_171_1.png)
+
+
+
+![png](output_171_2.png)
+
+
+
+![png](output_171_3.png)
+
+
+
+![png](output_171_4.png)
+
+
+
+![png](output_171_5.png)
+
+
+
+![png](output_171_6.png)
+
+
+
+![png](output_171_7.png)
+
+
+
+![png](output_171_8.png)
+
+
+
+![png](output_171_9.png)
+
+
+
+```python
+# fig =  pdp.pdp_plot(pdp_dist, feat)
+# fig[0].get_axes()
+```
+
+
+
+
+    [<matplotlib.axes._subplots.AxesSubplot at 0x1c1acf9208>,
+     <matplotlib.axes._subplots.AxesSubplot at 0x1c1fe48d30>,
+     <matplotlib.axes._subplots.AxesSubplot at 0x1c1fe48860>,
+     <matplotlib.axes._subplots.AxesSubplot at 0x1c21507eb8>]
+
+
+
+
+![png](output_172_1.png)
+
+
+# CONCLUSIONS & RECOMMENDATIONS
+
+Location (Latitude and Longitude): 
+> Wells are classified as functioning between 34-37 degrees longitude. You'll see that backed up by viewing the classification of nonfunctional for longitude as being near opposite in results, showing most telling below 34 deg longitude and above 37 degrees. Latitude classifies functioning best at -9.5 and -3 degrees. Repairs are needed mainly at pumps along latitude -11.5 degrees. Nonfunctioning pumps will be along latitudes from -9 to -1. Nonfunctional pumps will be located mostly between 250 and 1250 sea level. Perhaps a well has to work harder and requires more materials if the pump is higher above sea level which means more things that could break. 
+
+Population:
+> It seems that the lower population and remote wells are more likely to be nonfunctional. Could be because of less people around to notify authorities of the problem and is not needed. Pumps near high population on the other hand, have a higher chance of needing repair. So it'd be best to focus on repairs to wells near populations who need it most and then get to non-populated pumps second.
+
+Gravity extraction pumps:
+> Gravity extraction type pumps have a high chance of needing repair, but are often still functional, so check on those pumps as priority and also focus on not building more of that type, focusing on more resilient type of pumps. 
+
+For future feature selection and engineering: 
+- Look at skewed 0s in long, lat that I removed, population, cnstruction year and amount tsh. 
+- Construction year is very skewed but still important because the older wells could be falling apart. You'll see that the older a pump is the higher chance of it being nonfunctional or in need of repair. 
+- If the well is dry, then the pump is most likely broken or in need of repair, although fixing it should be lower priority since it is not in use.  
+- Lower total static head amount shows a higher chance of being broken. Pumps at 0 tsh are most likely broken. 
+- Quantity labeled as enough most likely functioning. 
+
+
+```python
+
+```
+
+# Competition run final test data
 
 
 ```python
@@ -7209,290 +7569,6 @@ onehot_testdata.head()
 
 
 
-### fit model
-
-
-```python
-## Start timer and fit search
-timer = Timer()
-timer.start()
-
-
-# ## Fit model
-best_params = {'criterion': 'entropy',
-                 'max_depth': None,
-                 'max_features': 20,
-                 'min_samples_leaf': 1}
-
-# hard code in best params 
-grid_rf = RandomForestClassifier(**best_params, random_state=6)
-grid_rf.fit(smote_X_train, smote_y_train)
-
-# eval model
-y_preds = grid_rf.predict(X_test)
-evaluate_model(y_test,y_preds,X_test, grid_rf,10)
-
-## Stop time
-timer.stop()
-```
-
-    [i] Timer started at 	        05/03/20 - 03:43:48 PM
-    [i] Timer started at 	        05/03/20 - 03:43:48 PM
-                             precision    recall  f1-score   support
-    
-                 functional       0.82      0.84      0.83      7961
-    functional needs repair       0.38      0.42      0.40       945
-             non functional       0.82      0.78      0.80      5491
-    
-                   accuracy                           0.79     14397
-                  macro avg       0.67      0.68      0.68     14397
-               weighted avg       0.79      0.79      0.79     14397
-    
-
-
-
-![png](output_176_1.png)
-
-
-    [i] Timer ended at 	        05/03/20 - 03:44:53 PM
-    			- Total time = 0:01:05.034507
-
-
-
-```python
-print(grid_rf.score(smote_X_train,smote_y_train))
-print(grid_rf.score(X_test,y_test))
-```
-
-    0.9999573160320984
-    0.7888448982426894
-
-
-### Partial Dependence Plots
-Will show how each feature effects classification.
-
-
-```python
-top_features = pd.Series(grid_rf.feature_importances_,index=X_train.columns).sort_values(ascending=False).head(10)
-feature_names = [i for i in X_test.columns if X_test[i].dtype in [np.int64] or [np.float64]]
-
-```
-
-
-```python
-top_features
-```
-
-
-
-
-    longitude                        0.148739
-    latitude                         0.145763
-    gps_height                       0.063199
-    construction_year                0.049446
-    quantity_dry                     0.044317
-    population                       0.043254
-    quantity_group_dry               0.030547
-    extraction_type_group_gravity    0.027862
-    amount_tsh                       0.024766
-    quantity_group_enough            0.018107
-    dtype: float64
-
-
-
-
-```python
-# don't know how to get indexes from top features so doing it manually
-top_features_list = ['longitude','latitude', 'gps_height','construction_year', 'quantity_dry','population',
-                     'quantity_group_dry','extraction_type_group_gravity','amount_tsh', 'quantity_group_enough']
-```
-
-
-```python
-# install pdp if you don't have it
-# !pip install pdpbox
-```
-
-
-```python
-feature_names
-```
-
-
-
-
-    ['amount_tsh',
-     'gps_height',
-     'longitude',
-     'latitude',
-     'population',
-     'construction_year',
-     'basin_Internal',
-     'basin_Lake Nyasa',
-     'basin_Lake Rukwa',
-     'basin_Lake Tanganyika',
-     'basin_Lake Victoria',
-     'basin_Pangani',
-     'basin_Rufiji',
-     'basin_Ruvuma / Southern Coast',
-     'basin_Wami / Ruvu',
-     'region_Arusha',
-     'region_Dar es Salaam',
-     'region_Dodoma',
-     'region_Iringa',
-     'region_Kagera',
-     'region_Kigoma',
-     'region_Kilimanjaro',
-     'region_Lindi',
-     'region_Manyara',
-     'region_Mara',
-     'region_Mbeya',
-     'region_Morogoro',
-     'region_Mtwara',
-     'region_Mwanza',
-     'region_Pwani',
-     'region_Rukwa',
-     'region_Ruvuma',
-     'region_Shinyanga',
-     'region_Singida',
-     'region_Tabora',
-     'region_Tanga',
-     'extraction_type_group_afridev',
-     'extraction_type_group_gravity',
-     'extraction_type_group_india mark ii',
-     'extraction_type_group_india mark iii',
-     'extraction_type_group_mono',
-     'extraction_type_group_nira/tanira',
-     'extraction_type_group_other',
-     'extraction_type_group_other handpump',
-     'extraction_type_group_other motorpump',
-     'extraction_type_group_rope pump',
-     'extraction_type_group_submersible',
-     'extraction_type_group_swn 80',
-     'extraction_type_group_wind-powered',
-     'management_company',
-     'management_other',
-     'management_other - school',
-     'management_parastatal',
-     'management_private operator',
-     'management_trust',
-     'management_unknown',
-     'management_vwc',
-     'management_water authority',
-     'management_water board',
-     'management_wua',
-     'management_wug',
-     'management_group_commercial',
-     'management_group_other',
-     'management_group_parastatal',
-     'management_group_unknown',
-     'management_group_user-group',
-     'water_quality_coloured',
-     'water_quality_fluoride',
-     'water_quality_fluoride abandoned',
-     'water_quality_milky',
-     'water_quality_salty',
-     'water_quality_salty abandoned',
-     'water_quality_soft',
-     'water_quality_unknown',
-     'quality_group_colored',
-     'quality_group_fluoride',
-     'quality_group_good',
-     'quality_group_milky',
-     'quality_group_salty',
-     'quality_group_unknown',
-     'quantity_dry',
-     'quantity_enough',
-     'quantity_insufficient',
-     'quantity_seasonal',
-     'quantity_unknown',
-     'quantity_group_dry',
-     'quantity_group_enough',
-     'quantity_group_insufficient',
-     'quantity_group_seasonal',
-     'quantity_group_unknown',
-     'source_type_borehole',
-     'source_type_dam',
-     'source_type_other',
-     'source_type_rainwater harvesting',
-     'source_type_river/lake',
-     'source_type_shallow well',
-     'source_type_spring',
-     'waterpoint_type_cattle trough',
-     'waterpoint_type_communal standpipe',
-     'waterpoint_type_communal standpipe multiple',
-     'waterpoint_type_dam',
-     'waterpoint_type_hand pump',
-     'waterpoint_type_improved spring',
-     'waterpoint_type_other',
-     'waterpoint_type_group_cattle trough',
-     'waterpoint_type_group_communal standpipe',
-     'waterpoint_type_group_dam',
-     'waterpoint_type_group_hand pump',
-     'waterpoint_type_group_improved spring',
-     'waterpoint_type_group_other']
-
-
-
-
-```python
-# from sklearn.inspection import plot_partial_dependence as pdp
-
-from pdpbox import pdp, get_dataset, info_plots
-
-for feat in top_features_list:
-    
-    pdp_dist = pdp.pdp_isolate(model=grid_rf, dataset=X_test, model_features=feature_names, feature=feat)
-
-    pdp.pdp_plot(pdp_dist, feat)
-    plt.show()
-```
-
-
-![png](output_184_0.png)
-
-
-
-![png](output_184_1.png)
-
-
-
-![png](output_184_2.png)
-
-
-
-![png](output_184_3.png)
-
-
-
-![png](output_184_4.png)
-
-
-
-![png](output_184_5.png)
-
-
-
-![png](output_184_6.png)
-
-
-
-![png](output_184_7.png)
-
-
-
-![png](output_184_8.png)
-
-
-
-![png](output_184_9.png)
-
-
-# iNTERPRET
-
-EVAL: For future analysis, look at skewed 0s in long, lat that I removed, population, and amount tsh. 
-Wells are classified as functioning between 34-37 degrees longitude. You'll see that backed up by viewing the classification of nonfunctional for longitude as being near opposite in results, showing most telling below 34 deg longitude and above 37 degrees. Latitude classifies functioning best at -9.5 and -3 degrees. Repairs are needed mainly at pumps along latitude -11.5 degrees. And nonfunctioning pumps will be along latitudes from -9 to -1. Nonfunctional pumps will be located mostly between 250 and 1250 sea level. Perhaps a well has to work harder and requires more materials if the pump is higher above sea level which means more things that could break. Construction year is very skewed but still important because the older wells could be falling apart. You'll see that the older a pump is the higher chance of it being nonfunctional or in need of repair. If the well is dry, then the pump is most likely broken or in need of repair, although fixing it should be lower priority since it is not in use. It seems that the lower population wells are more likely to be nonfunctional. Could be because of less people around to notify authorities of the problem and is not needed. So it'd be best to focus on repairs to wells near populations who need it most and then get to non populated pumps second. Gravity extraction type pumps have a high chance of needing repair, but are often still functional, so check on those pumps as priority and also focus on not building more of that type, focusing on more resilient type of pumps. Lower total static head amount shows a higher chance of being broken. Pumps at 0 tsh are most likely broken. Quantity labeled as enough most likely functioning. 
-
 # final data predictions for contest
 
 
@@ -7752,7 +7828,5 @@ prediction_id.shape
 
 
 ```python
-prediction_id.to_csv ('predictiondf_2.csv', index = False, header=True)
+# prediction_id.to_csv ('predictiondf_2.csv', index = False, header=True)
 ```
-
-# CONCLUSIONS & RECOMMENDATIONS
