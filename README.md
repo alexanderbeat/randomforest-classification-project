@@ -75,7 +75,7 @@ test acc: 0.7880113912620685
 
 Classification Report:
 
-![classreport]()
+![classreport](https://github.com/alexanderbeat/randomforest-classification-project/blob/master/images/rf_classreport.png)
 
 
 Confusion Matrix and most important features for classification:
